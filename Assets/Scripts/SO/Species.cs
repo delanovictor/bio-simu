@@ -9,18 +9,18 @@ public class Species : ScriptableObject
     public string name;
     public string tag;
     public Sprite sprite;
+    public Sprite childSprite;
     public bool collision;
-
     public Species targetSpecies;
-
-    public DNA dna;
-
+    public DNA baseDNA;
+    public DNA mutation;
     public enum Reproduction
     {
         Fertilization,
         Polen
     }
-
     public Reproduction reproduction;
+    public float adulthoodTime;
+    public float childhoodSize;
 }
 

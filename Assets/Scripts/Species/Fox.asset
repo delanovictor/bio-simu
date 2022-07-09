@@ -15,6 +15,7 @@ MonoBehaviour:
   name: Fox
   tag: Fox
   sprite: {fileID: -1940071840910812223, guid: 784213378a331844ab161bca1784087f, type: 3}
+  childSprite: {fileID: 0}
   collision: 1
   targetSpecies: {fileID: 11400000, guid: ea422b0b78edcff4793015c886c657e6, type: 2}
   dna:
@@ -27,4 +28,7 @@ MonoBehaviour:
     spawnRadius: 1
     hungerTreshHold: 60
     eatingValue: 60
+    gestationDuration: 5
   reproduction: 0
+  adulthoodTime: 10
+  childhoodSize: 0.75

@@ -13,5 +13,5 @@ public struct DNA
 
     public float hungerTreshHold;
     public float eatingValue;
-
+    public float gestationDuration;
 }

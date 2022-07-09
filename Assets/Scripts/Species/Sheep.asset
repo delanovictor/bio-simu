@@ -15,16 +15,31 @@ MonoBehaviour:
   name: Sheep
   tag: Sheep
   sprite: {fileID: -6998433867613677832, guid: 784213378a331844ab161bca1784087f, type: 3}
+  childSprite: {fileID: -6998433867613677832, guid: 784213378a331844ab161bca1784087f, type: 3}
   collision: 1
   targetSpecies: {fileID: 11400000, guid: 62897ebfcc714ff4ea1867c1d50a0adb, type: 2}
-  dna:
-    speed: 0.5
-    sightRange: 2
+  baseDNA:
+    speed: 0.7
+    sightRange: 1
     maxHunger: 100
-    hungerRate: 1
-    maxMating: 20
+    hungerRate: 2
+    maxMating: 100
     matingRate: 2
-    spawnRadius: 0.1
-    hungerTreshHold: 60
-    eatingValue: 20
+    spawnRadius: 1
+    hungerTreshHold: 80
+    eatingValue: 50
+    gestationDuration: 10
+  mutation:
+    speed: 0.1
+    sightRange: 0.1
+    maxHunger: 7
+    hungerRate: 0.2
+    maxMating: 7
+    matingRate: 0.2
+    spawnRadius: 0
+    hungerTreshHold: 0
+    eatingValue: 0
+    gestationDuration: 0.5
   reproduction: 0
+  adulthoodTime: 10
+  childhoodSize: 0.75

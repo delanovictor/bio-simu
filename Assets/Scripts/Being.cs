@@ -4,91 +4,117 @@ using UnityEngine;
 
 public class Being : MonoBehaviour
 {
-    public Species species;
-    public bool alive = false;
+    [SerializeField] private Species species;
+    [SerializeField] private bool alive = false;
 
-    public float currentHunger;
-    public float currentMating;
+    [SerializeField] private Being father;
+    [SerializeField] private Being mother;
 
-    public GameObject targetFood;
-    public GameObject targetMate;
+    [SerializeField] private float currentHunger;
+    [SerializeField] private float currentMating;
 
-    public Vector3 targetPosition;
+    [SerializeField] private GameObject targetFood;
+    [SerializeField] private GameObject targetMate;
 
-    public DNA individualDNA;
-    public DNA dna;
+    [SerializeField] private Vector3 targetPosition;
 
-    public SpriteRenderer sr;
+    [SerializeField] public DNA dna;
 
-    public Sprite deathSprite;
+    [SerializeField] private SpriteRenderer sr;
 
-    public GameObject beingPrefab;
+    [SerializeField] private Sprite deathSprite;
 
-    public enum State
+    [SerializeField] private GameObject beingPrefab;
+
+    private enum State
     {
         MovingToFood,
         MovingToMate,
         Mating,
         Idle,
     }
-    public State state;
+    [SerializeField] private State state;
 
-    public enum Sex
+    private enum Sex
     {
         Male,
         Female
     }
 
-    public Sex sex;
+    [SerializeField] private Sex sex;
 
-    public List<Being> failedPartners;
+    [SerializeField] private bool isChild = false;
+
+    [SerializeField] private List<Being> failedPartners;
 
     private float resetFailedPartnersTime = 5;
 
-    private void Start()
-    {
-        Birth(species);
-    }
-
     void Awake()
     {
+        Debug.Log("AWAKE");
         Birth(species);
     }
 
-    public void Birth(Species s, DNA parentA = new DNA(), DNA parentB = new DNA())
+    public void Birth(Species s, Being parentA = null, Being parentB = null)
     {
         species = s;
-        // GenerateDNA(parentA, parentB);
-        dna = species.dna;
+
+        if (parentA == null || parentB == null)
+        {
+            dna = species.baseDNA;
+
+            mother = parentA;
+            father = parentB;
+        }
+        else
+        {
+            dna = GenerateDNA(parentA.dna, parentB.dna);
+        }
+
+        gameObject.name = species.name + Random.value.ToString().Replace("0,", "");
 
         sex = (Sex)Random.Range(0, 2);
 
         Reset();
     }
 
-    void GenerateDNA(DNA parentA, DNA parentB)
+    DNA GenerateDNA(DNA parentA, DNA parentB)
     {
-        individualDNA.speed = Random.Range(parentA.speed, parentB.speed) * Random.Range(-0.3f, 0.3f);
-        individualDNA.sightRange = Random.Range(parentA.sightRange, parentB.sightRange) * Random.Range(-0.3f, 0.3f);
-        individualDNA.hungerRate = Random.Range(parentA.hungerRate, parentB.hungerRate) * Random.Range(-0.3f, 0.3f);
-        individualDNA.maxHunger = Random.Range(parentA.maxHunger, parentB.maxHunger) * Random.Range(-0.3f, 0.3f);
-        individualDNA.maxMating = Random.Range(parentA.maxMating, parentB.maxMating) * Random.Range(-0.3f, 0.3f);
-        individualDNA.matingRate = Random.Range(parentA.matingRate, parentB.matingRate) * Random.Range(-0.3f, 0.3f);
-        individualDNA.spawnRadius = Random.Range(parentA.spawnRadius, parentB.spawnRadius) * Random.Range(-0.3f, 0.3f);
-        individualDNA.hungerTreshHold = Random.Range(parentA.hungerTreshHold, parentB.hungerTreshHold) * Random.Range(-0.3f, 0.3f);
-        individualDNA.eatingValue = Random.Range(parentA.eatingValue, parentB.eatingValue) * Random.Range(-0.3f, 0.3f);
+        Debug.Log("GenerateDNA");
+        DNA newDNA = new DNA();
+
+        newDNA.speed = RandomGene(parentA, parentB).speed + Random.Range(-species.mutation.speed, species.mutation.speed);
+        newDNA.sightRange = RandomGene(parentA, parentB).sightRange + Random.Range(-species.mutation.sightRange, species.mutation.sightRange);
+        newDNA.hungerRate = RandomGene(parentA, parentB).hungerRate + Random.Range(-species.mutation.hungerRate, species.mutation.hungerRate);
+        newDNA.maxHunger = RandomGene(parentA, parentB).maxHunger + Random.Range(-species.mutation.maxHunger, species.mutation.maxHunger);
+        newDNA.maxMating = RandomGene(parentA, parentB).maxMating + Random.Range(-species.mutation.maxMating, species.mutation.maxMating);
+        newDNA.matingRate = RandomGene(parentA, parentB).matingRate + Random.Range(-species.mutation.matingRate, species.mutation.matingRate);
+        newDNA.spawnRadius = RandomGene(parentA, parentB).spawnRadius + Random.Range(-species.mutation.spawnRadius, species.mutation.spawnRadius);
+        newDNA.hungerTreshHold = RandomGene(parentA, parentB).hungerTreshHold + Random.Range(-species.mutation.hungerTreshHold, species.mutation.hungerTreshHold);
+        newDNA.eatingValue = RandomGene(parentA, parentB).eatingValue + Random.Range(-species.mutation.eatingValue, species.mutation.eatingValue);
 
 
-        dna.speed = species.dna.speed + individualDNA.speed;
-        dna.sightRange = species.dna.sightRange + individualDNA.sightRange;
-        dna.hungerRate = species.dna.hungerRate + individualDNA.hungerRate;
-        dna.maxHunger = species.dna.maxHunger + individualDNA.maxHunger;
-        dna.maxMating = species.dna.maxMating + individualDNA.maxMating;
-        dna.matingRate = species.dna.matingRate + individualDNA.matingRate;
-        dna.spawnRadius = species.dna.spawnRadius + individualDNA.spawnRadius;
-        dna.hungerTreshHold = species.dna.hungerTreshHold + individualDNA.hungerTreshHold;
-        dna.eatingValue = species.dna.eatingValue + individualDNA.eatingValue;
+        Debug.Log(newDNA);
+        return newDNA;
     }
+
+    DNA RandomGene(DNA parentA, DNA parentB)
+    {
+        float rand = Random.value;
+
+        if (rand > 0.5f)
+        {
+
+            Debug.Log("Mother Gene");
+            return parentA;
+        }
+        else
+        {
+            Debug.Log("Father Gene");
+            return parentB;
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -107,7 +133,11 @@ public class Being : MonoBehaviour
     void Behave()
     {
         currentHunger = currentHunger - (dna.hungerRate * Time.deltaTime);
-        currentMating = currentMating + (dna.matingRate * Time.deltaTime);
+
+        if (!isChild)
+        {
+            currentMating = currentMating + (dna.matingRate * Time.deltaTime);
+        }
 
         if (dna.speed > 0)
         {
@@ -171,7 +201,7 @@ public class Being : MonoBehaviour
 
         if (Vector3.Distance(transform.position, targetPosition) <= 0.1f)
         {
-            newTargetPosition = Helper.Random(new Vector3(-species.dna.sightRange, -species.dna.sightRange, 1), new Vector3(species.dna.sightRange, species.dna.sightRange, 1));
+            newTargetPosition = Helper.Random(new Vector3(-species.baseDNA.sightRange, -species.baseDNA.sightRange, 1), new Vector3(species.baseDNA.sightRange, species.baseDNA.sightRange, 1));
             state = State.Idle;
         }
 
@@ -211,7 +241,7 @@ public class Being : MonoBehaviour
                                 else
                                 {
                                     failedPartners.Add(possibleMate);
-                                    StartCoroutine(ResetFailedPartners(possibleMate));
+                                    StartCoroutine(ResetFailedPartnersCoroutine(possibleMate));
                                 }
                                 break;
                             }
@@ -279,13 +309,15 @@ public class Being : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void GiveBirth(DNA partnerDNA = new DNA())
+    void GiveBirth(GameObject partner = null)
     {
         Vector3 spawnLocation = transform.position + new Vector3(Random.Range(-dna.spawnRadius, dna.spawnRadius), Random.Range(-dna.spawnRadius, dna.spawnRadius), 1);
 
         GameObject g = Instantiate(beingPrefab, spawnLocation, Quaternion.identity);
 
         currentMating = 0f;
+
+        g.GetComponent<Being>().Birth(species, this, partner.GetComponent<Being>());
     }
 
     void Mate(GameObject partner)
@@ -312,6 +344,14 @@ public class Being : MonoBehaviour
 
     }
 
+
+    IEnumerator GestationCoroutine(GameObject partner)
+    {
+        yield return new WaitForSeconds(dna.gestationDuration);
+
+        GiveBirth(partner);
+    }
+
     IEnumerator MateCoroutine(GameObject partner)
     {
         yield return new WaitForSeconds(1.5f);
@@ -322,19 +362,25 @@ public class Being : MonoBehaviour
 
         if (sex == Sex.Female)
         {
-            GiveBirth();
+            StartCoroutine(GestationCoroutine(partner));
         }
-
-        StopCoroutine("MateCoroutine");
     }
 
-    IEnumerator ResetFailedPartners(Being refusedPartner)
+    IEnumerator ResetFailedPartnersCoroutine(Being refusedPartner)
     {
         yield return new WaitForSeconds(resetFailedPartnersTime);
 
         failedPartners.Remove(refusedPartner);
     }
 
+    IEnumerator AgeCoroutine()
+    {
+        yield return new WaitForSeconds(species.adulthoodTime);
+
+        Debug.Log("Age");
+        isChild = false;
+        transform.localScale = new Vector3(1f, 1f, 1f);
+    }
 
     void Reset()
     {
@@ -359,7 +405,11 @@ public class Being : MonoBehaviour
 
         failedPartners = new List<Being>();
 
+        isChild = true;
 
+        transform.localScale = new Vector3(species.childhoodSize, species.childhoodSize, species.childhoodSize);
+
+        StartCoroutine(AgeCoroutine());
 
         if (!species.collision)
         {

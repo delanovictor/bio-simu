@@ -98,18 +98,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0013233572, y: -0.0059603453}
+  m_Offset: {x: -0.00042495131, y: -0.010454267}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.16}
+    oldSize: {x: 0.5, y: 0.5}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.19331148, y: 0.17361379}
+  m_Size: {x: 0.51495105, y: 0.49897414}
   m_EdgeRadius: 0
 --- !u!50 &8154524056119145977
 Rigidbody2D:
@@ -146,20 +146,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   species: {fileID: 11400000, guid: 43c472422772bcc45bbcc62d295e8360, type: 2}
   alive: 0
+  father: {fileID: 0}
+  mother: {fileID: 0}
   currentHunger: 0
   currentMating: 0
-  target: {fileID: 0}
+  targetFood: {fileID: 0}
+  targetMate: {fileID: 0}
   targetPosition: {x: 0, y: 0, z: 0}
-  individualDNA:
-    speed: 0
-    sightRange: 0
-    maxHunger: 0
-    hungerRate: 0
-    maxMating: 0
-    matingRate: 0
-    spawnRadius: 0
-    hungerTreshHold: 0
-    eatingValue: 0
   dna:
     speed: 0
     sightRange: 0
@@ -170,6 +163,11 @@ MonoBehaviour:
     spawnRadius: 0
     hungerTreshHold: 0
     eatingValue: 0
+    gestationDuration: 0
   sr: {fileID: 0}
   deathSprite: {fileID: 0}
   beingPrefab: {fileID: 721026289782258719}
+  state: 0
+  sex: 0
+  isChild: 0
+  failedPartners: []
