@@ -20,7 +20,7 @@ MonoBehaviour:
   targetSpecies: {fileID: 11400000, guid: 62897ebfcc714ff4ea1867c1d50a0adb, type: 2}
   baseDNA:
     speed: 0.7
-    sightRange: 1
+    sightRange: 10
     maxHunger: 100
     hungerRate: 2
     maxMating: 100

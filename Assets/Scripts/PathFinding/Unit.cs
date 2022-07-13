@@ -26,7 +26,9 @@ public class Unit : MonoBehaviour
             Debug.Log("pathSuccessful");
 
             StopCoroutine("FollowPath");
+
             path = newPath;
+
             StartCoroutine("FollowPath");
         }
     }
@@ -42,6 +44,7 @@ public class Unit : MonoBehaviour
                 targetIndex++;
                 if (targetIndex >= path.Length)
                 {
+                    targetIndex = 0;
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];
@@ -59,6 +62,9 @@ public class Unit : MonoBehaviour
             for (int i = targetIndex; i < path.Length; i++)
             {
                 Gizmos.color = Color.black;
+
+
+
                 Gizmos.DrawCube(path[i], Vector3.one);
 
                 if (i == targetIndex)

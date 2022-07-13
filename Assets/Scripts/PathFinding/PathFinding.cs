@@ -75,6 +75,8 @@ public class PathFinding : MonoBehaviour
 
                         if (!openSet.Contains(neighbour))
                             openSet.Add(neighbour);
+                        else
+                            openSet.UpdateItem(neighbour);
                     }
                 }
 
@@ -104,7 +106,12 @@ public class PathFinding : MonoBehaviour
 
             currentNode = currentNode.parent;
         }
+
+        if (currentNode == startNode)
+            path.Add(currentNode);
+
         Vector3[] waypoints = SimplifyPath(path);
+
         Array.Reverse(waypoints);
 
         return waypoints;
@@ -117,13 +124,13 @@ public class PathFinding : MonoBehaviour
 
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].gridPosition.x - path[i].gridPosition.x, path[i - 1].gridPosition.y - path[i].gridPosition.y);
-            if (directionNew != directionOld)
-            {
-                waypoints.Add(path[i].worldPosition);
-            }
+            // Vector2 directionNew = new Vector2(path[i - 1].gridPosition.x - path[i].gridPosition.x, path[i - 1].gridPosition.y - path[i].gridPosition.y);
+            // if (directionNew != directionOld)
+            // {
+            waypoints.Add(path[i - 1].worldPosition);
+            // }
 
-            directionOld = directionNew;
+            // directionOld = directionNew;
         }
 
         return waypoints.ToArray();

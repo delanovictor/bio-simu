@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class Node : IHeapItem<Node>
 {
+
     public bool walkable;
     public Vector3 worldPosition;
 
@@ -22,6 +22,7 @@ public class Node : IHeapItem<Node>
 
     }
 
+
     public int fCost
     {
         get
@@ -36,7 +37,6 @@ public class Node : IHeapItem<Node>
         {
             return heapIndex;
         }
-
         set
         {
             heapIndex = value;
@@ -46,12 +46,10 @@ public class Node : IHeapItem<Node>
     public int CompareTo(Node nodeToCompare)
     {
         int compare = fCost.CompareTo(nodeToCompare.fCost);
-
         if (compare == 0)
         {
             compare = hCost.CompareTo(nodeToCompare.hCost);
         }
-
         return -compare;
     }
 }

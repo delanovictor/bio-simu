@@ -49,6 +49,11 @@ public class Being : MonoBehaviour
 
     private float resetFailedPartnersTime = 5;
 
+    public Vector3[] path;
+
+    int targetIndex;
+
+
     void Awake()
     {
         Debug.Log("AWAKE");
@@ -115,7 +120,6 @@ public class Being : MonoBehaviour
         }
     }
 
-
     // Update is called once per frame
     void Update()
     {
@@ -176,33 +180,110 @@ public class Being : MonoBehaviour
                 }
             }
 
-            MoveToTarget(target);
+            if (target == null)
+            {
+                targetPosition = Wander();
+            }
+            else
+            {
+                targetPosition = target.transform.position;
+            }
+
         }
+    }
+
+    IEnumerator RecalculatePath()
+    {
+
+
+        yield return new WaitForSeconds(2f);
+
+        PathRequestManager.RequestPath(transform.position, targetPosition, OnPathFound);
+
+
+        Debug.Log("Recalculate");
+        Debug.Log(targetPosition);
+        Debug.Log("");
 
     }
 
-    void MoveToTarget(GameObject target)
+    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
-        if (target == null)
+        if (pathSuccessful)
         {
-            targetPosition = Wander();
-        }
-        else
-        {
-            targetPosition = target.transform.position;
-        }
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * dna.speed);
+            StopCoroutine("FollowPath");
+
+            path = newPath;
+
+            StartCoroutine("FollowPath");
+        }
+    }
+
+    IEnumerator FollowPath()
+    {
+
+        // if (path.Length > 0)
+        // {
+        Vector3 currentWaypoint = path[0];
+
+        while (true)
+        {
+            if (transform.position == currentWaypoint)
+            {
+                targetIndex++;
+
+                // PathRequestManager.RequestPath(transform.position, targetPosition, OnPathFound);
+
+                // if (targetIndex == 3)
+                // {
+                //     targetIndex = 0;
+                //     path = new Vector3[0];
+                //     PathRequestManager.RequestPath(transform.position, targetPosition, OnPathFound);
+                //     yield break;
+                // }
+
+                if (targetIndex >= path.Length)
+                {
+                    targetIndex = 0;
+                    path = new Vector3[0];
+                    yield break;
+                }
+
+                currentWaypoint = path[targetIndex];
+            }
+
+            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, dna.speed * Time.deltaTime);
+            yield return null;
+            // }
+            // }
+            //     else
+            //     {
+            // while (true)
+            // {
+            //     if (path.Length > 0)
+            //     {
+            //         yield break;
+            //     }
+
+            //     transform.position = Vector3.MoveTowards(transform.position, targetPosition, dna.speed * Time.deltaTime);
+            //     yield return null;
+            // }
+            // }
+
+        }
     }
 
     Vector3 Wander()
     {
         Vector3 newTargetPosition = targetPosition;
 
-        if (Vector3.Distance(transform.position, targetPosition) <= 0.1f)
+        if (Vector3.Distance(transform.position, targetPosition) <= 0.5f)
         {
-            newTargetPosition = Helper.Random(new Vector3(-species.baseDNA.sightRange, -species.baseDNA.sightRange, 1), new Vector3(species.baseDNA.sightRange, species.baseDNA.sightRange, 1));
+            newTargetPosition = Helper.Random(new Vector3(-species.baseDNA.sightRange, -species.baseDNA.sightRange, 0), new Vector3(species.baseDNA.sightRange, species.baseDNA.sightRange, 0));
             state = State.Idle;
+            PathRequestManager.RequestPath(transform.position, newTargetPosition, OnPathFound);
+
         }
 
         return newTargetPosition;
@@ -344,7 +425,6 @@ public class Being : MonoBehaviour
 
     }
 
-
     IEnumerator GestationCoroutine(GameObject partner)
     {
         yield return new WaitForSeconds(dna.gestationDuration);
@@ -410,6 +490,7 @@ public class Being : MonoBehaviour
         transform.localScale = new Vector3(species.childhoodSize, species.childhoodSize, species.childhoodSize);
 
         StartCoroutine(AgeCoroutine());
+        StartCoroutine(RecalculatePath());
 
         if (!species.collision)
         {
@@ -454,22 +535,27 @@ public class Being : MonoBehaviour
     {
         if (species != null && dna.speed > 0)
         {
-            // Gizmos.DrawWireSphere(transform.position, species.sightRange);
 
-            Gizmos.color = Color.white;
-
-            if (targetFood != null)
+            if (path != null)
             {
-                Gizmos.color = Color.green;
+                for (int i = targetIndex; i < path.Length; i++)
+                {
+                    Gizmos.color = Color.black;
+
+                    if (i == path.Length - 1)
+                    {
+                        Gizmos.color = Color.red;
+                    }
+
+                    Gizmos.DrawCube(path[i], Vector3.one * 0.1f);
+
+                    if (i == targetIndex)
+                    {
+                        Gizmos.DrawLine(transform.position, path[i]);
+                    }
+                }
             }
-
-            if (targetMate != null)
-            {
-                Gizmos.color = Color.red;
-            }
-
-            Gizmos.DrawLine(transform.position, targetPosition);
-
         }
     }
+
 }

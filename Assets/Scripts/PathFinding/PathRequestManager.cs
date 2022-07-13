@@ -22,7 +22,6 @@ public class PathRequestManager : MonoBehaviour
     }
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
     {
-        Debug.Log("Request Path");
         PathRequest newRequest = new PathRequest(pathStart, pathEnd, callback);
 
         instance.pathRequestQueue.Enqueue(newRequest);
@@ -32,12 +31,8 @@ public class PathRequestManager : MonoBehaviour
 
     void TryProcessNext()
     {
-        Debug.Log("TryProcessNext");
-
         if (!isProcessingPath && pathRequestQueue.Count > 0)
         {
-            Debug.Log("Processing");
-
             currentPathRequest = pathRequestQueue.Dequeue();
             isProcessingPath = true;
 
